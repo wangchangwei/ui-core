@@ -1,0 +1,19 @@
+import DashboardOutlined from "@mui/icons-material/DashboardOutlined";
+import FolderOutlined from "@mui/icons-material/FolderOutlined";
+import PeopleOutlined from "@mui/icons-material/PeopleOutlined";
+import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
+import WidgetsOutlined from "@mui/icons-material/WidgetsOutlined";
+import type { Permission } from '../domain/permissions';
+export const navigation: {
+    label: string;
+    path: string;
+    permission: Permission;
+    icon: typeof DashboardOutlined;
+    group: string;
+}[] = [
+    { label: 'Overview', path: '/dashboard', permission: 'dashboard:read', icon: DashboardOutlined, group: 'Workspace' },
+    { label: 'Projects', path: '/projects', permission: 'projects:read', icon: FolderOutlined, group: 'Workspace' },
+    { label: 'Users', path: '/users', permission: 'users:read', icon: PeopleOutlined, group: 'Workspace' },
+    { label: 'Design system', path: '/design-system', permission: 'design:read', icon: WidgetsOutlined, group: 'Resources' },
+    { label: 'Settings', path: '/settings', permission: 'settings:write', icon: SettingsOutlined, group: 'Resources' },
+];

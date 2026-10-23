@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-24T00:00:00.000Z",
+  "title": "Design System: Forma UI Core / Vercel",
+  "source": "docs/reference/DESIGN-vercel.md",
+  "extensions": {
+    "shadows": [
+      {
+        "name": "micro",
+        "value": "0 1px 1px rgb(0 0 0 / 4%)",
+        "purpose": "轻微浮起"
+      },
+      {
+        "name": "layered",
+        "value": "0 2px 2px rgb(0 0 0 / 4%), 0 8px 16px -4px rgb(0 0 0 / 8%), inset 0 0 0 1px #ebebeb",
+        "purpose": "菜单、弹窗和浮层"
+      }
+    ],
+    "motion": [
+      {
+        "name": "control",
+        "value": "background-color 140ms ease-out",
+        "purpose": "控件状态，遵守 reduced-motion"
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "desktop-minimum",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-md",
+      "description": "后台主要动作；最小高度 40px，使用源稿 ink/link/focus token",
+      "html": "<button class=\"ds-primary\">Save changes</button>",
+      "css": ".ds-primary{font:500 14px/20px \"Geist Variable\",sans-serif;background:#171717;color:#fff;min-height:40px;padding:0 6px;border:1px solid #171717;border-radius:6px;transition:background-color 140ms ease-out}.ds-primary:hover{background:#4d4d4d;border-color:#4d4d4d}.ds-primary:focus-visible{outline:2px solid #0070f3;outline-offset:3px}"
+    },
+    {
+      "name": "Text field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "可见标签与源稿 hairline 边界",
+      "html": "<label class=\"ds-field\">Name<input value=\"Website redesign\" /></label>",
+      "css": ".ds-field{display:grid;gap:8px;font:500 14px/20px \"Geist Variable\",sans-serif;color:#171717}.ds-field input{font:400 14px/20px \"Geist Variable\",sans-serif;padding:8px 12px;min-height:40px;border:1px solid #ebebeb;border-radius:6px;background:#fff;color:#171717}.ds-field input:hover{border-color:#171717}.ds-field input:focus-visible{outline:2px solid #0070f3;outline-offset:2px}"
+    },
+    {
+      "name": "Project card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "细边框分隔的工作表面",
+      "html": "<article class=\"ds-card\"><strong>Website redesign</strong><p>Delivery initiative</p></article>",
+      "css": ".ds-card{padding:24px;border:1px solid #ebebeb;border-radius:12px;background:#fff;font:400 14px/20px \"Geist Variable\",sans-serif;color:#171717}.ds-card p{color:#4d4d4d}"
+    },
+    {
+      "name": "Active status",
+      "kind": "chip",
+      "refersTo": "status",
+      "description": "状态文字始终可见",
+      "html": "<span class=\"ds-status\">Active</span>",
+      "css": ".ds-status{display:inline-flex;align-items:center;height:24px;padding:0 8px;border:1px solid #ebebeb;border-radius:6px;color:#0761d1;background:#fff;font:500 14px/20px \"Geist Variable\",sans-serif}"
+    }
+  ],
+  "narrative": {
+    "northStar": "清晰、一致、可操作。",
+    "overview": "Vercel 源稿 token 优先，企业后台结构作为显式扩展。",
+    "keyCharacteristics": [
+      "Geist 字体与黑白灰基底",
+      "源稿 hairline、圆角与分层阴影",
+      "共享组件承载状态与权限"
+    ],
+    "rules": [
+      "源稿 token 优先于后台页面局部约定。",
+      "业务页面不写颜色、字号、圆角和阴影字面量。"
+    ],
+    "dos": [
+      "先读 DESIGN.md 与 docs/reference/DESIGN-vercel.md，再选择页面模板。"
+    ],
+    "donts": [
+      "不在业务页面覆盖全局 MUI 选择器。",
+      "不创建新的视觉 token 或配置驱动页面生成器。"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+import { test, expect } from '@playwright/test';
+
+test('rendered pages use the supplied Vercel visual contract', async ({ page }) => {
+  await page.goto('/login');
+  await expect(page.getByRole('heading', { name: 'Sign in to your workspace' })).toHaveCSS('font-size', '32px');
+  await expect(page.getByRole('heading', { name: 'A clear place to work.' })).toHaveCSS('font-size', '48px');
+  const signIn = page.getByRole('button', { name: 'Sign in', exact: true });
+  await expect(signIn).toHaveCSS('font-size', '14px');
+  await expect(signIn).toHaveCSS('line-height', '20px');
+  await expect(signIn).toHaveCSS('border-radius', '6px');
+  await expect(signIn).toHaveCSS('padding', '0px 6px');
+  const password = page.getByLabel('Password', { exact: true });
+  await expect(password).toHaveCSS('padding', '8px 12px');
+  await expect(password).toHaveCSS('line-height', '20px');
+  await expect(password.locator('..').locator('fieldset')).toHaveCSS('border-color', 'rgb(235, 235, 235)');
+  await signIn.hover();
+  await expect(signIn).toHaveCSS('background-color', 'rgb(77, 77, 77)');
+  await signIn.click();
+  await expect(page).toHaveURL(/\/dashboard$/);
+  await page.goto('/projects');
+  const card = page.locator('article').first();
+  await expect(card).toHaveCSS('border-radius', '12px');
+  await expect(card).toHaveCSS('border-color', 'rgb(235, 235, 235)');
+  await expect(card.locator('.MuiCardContent-root')).toHaveCSS('padding', '24px');
+  await expect(card.getByRole('heading')).toHaveCSS('font-size', '20px');
+  await expect(card.locator('.MuiChip-root')).toHaveCSS('color', 'rgb(7, 97, 209)');
+  await page.goto('/design-system');
+  await expect(page.getByRole('button', { name: 'Start deploying', exact: true })).toHaveCSS('border-radius', '100px');
+  await expect(page.getByRole('button', { name: 'Start deploying', exact: true })).toHaveCSS('font-size', '16px');
+  await expect(page.getByRole('button', { name: 'AI Apps', exact: true })).toHaveCSS('border-radius', '64px');
+  await expect(page.getByRole('button', { name: 'Circular button example', exact: true })).toHaveCSS('border-radius', '9999px');
+  await page.getByRole('button', { name: 'Open confirmation', exact: true }).click();
+  await expect(page.getByRole('dialog')).toHaveCSS('border-radius', '16px');
+  await expect(page.getByRole('dialog').getByRole('heading')).toHaveCSS('font-size', '20px');
+});
