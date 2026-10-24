@@ -44,7 +44,7 @@ export const tokens = {
     radius: { control: vercelTokens.rounded.sm, panel: vercelTokens.rounded.md, large: vercelTokens.rounded.lg,
         category: vercelTokens.rounded['pill-category'], pill: vercelTokens.rounded.pill, full: vercelTokens.rounded.full },
     // Product layout extensions from the approved admin scope, separate from source tokens.
-    size: { control: 40, row: 48, tableHeader: 44, sidebar: 232, topbar: 64, minViewport: 1280, pagePadding: 32, contentMax: 1200 },
+    size: { control: 40, row: 48, tableHeader: 44, sidebar: 232, topbar: 64, minViewport: 1280, pagePadding: 32 },
     font: { sans, mono },
     microElevation: '0px 1px 1px rgba(0,0,0,0.04)',
     elevation: `0px 2px 2px rgba(0,0,0,0.04), 0px 8px 16px -4px rgba(0,0,0,0.08), inset 0px 0px 0px 1px ${c.hairline}`,
@@ -91,6 +91,7 @@ export const theme = createTheme({
         display: type['display-xl'], lead: type['body-lg'], code: type.code,
     },
     components: {
+        MuiButtonBase: { defaultProps: { disableRipple: true }, styleOverrides: { root: { '&.Mui-focusVisible': { outline: `2px solid ${c.link}`, outlineOffset: 3 } } } },
         MuiCssBaseline: { styleOverrides: {
             html: { scrollbarGutter: 'stable' }, body: { margin: 0 }, '*': { boxSizing: 'border-box' },
             '::selection': { background: c.ink, color: c['on-primary'] },
@@ -100,7 +101,7 @@ export const theme = createTheme({
         } },
         MuiTypography: { defaultProps: { variantMapping: { display: 'h1', lead: 'p', code: 'code' } } },
         MuiButton: { defaultProps: { disableElevation: true }, styleOverrides: {
-            root: { borderRadius: tokens.radius.control, minHeight: tokens.size.control, padding: '0px 6px', whiteSpace: 'nowrap', transition: 'background-color 140ms ease-out' },
+            root: { borderRadius: tokens.radius.control, minHeight: tokens.size.control, padding: '0px 6px', whiteSpace: 'nowrap', transition: 'background-color 140ms ease-out', '&.MuiButton-colorError:not(.MuiButton-contained):not(.Mui-disabled)': { color: c['error-deep'] } },
             sizeSmall: { minHeight: 32 },
             outlined: { borderColor: c.hairline, color: c.ink, backgroundColor: c['canvas-elevated'], '&:hover': { borderColor: c.body, backgroundColor: c['hairline-soft'] } },
             text: { '&:hover': { backgroundColor: c['hairline-soft'] } },
@@ -109,14 +110,16 @@ export const theme = createTheme({
             { props: { variant: 'marketingOutlined' }, style: { ...type['button-lg'], borderRadius: tokens.radius.pill, padding: '0px 14px', minHeight: 44, border: `1px solid ${c.hairline}`, backgroundColor: c['canvas-elevated'], color: c.ink, '&:hover': { backgroundColor: c['hairline-soft'] } } },
             { props: { variant: 'category' }, style: { ...type['button-md'], borderRadius: tokens.radius.category, padding: '0px 16px', border: `1px solid ${c.hairline}`, backgroundColor: c['canvas-elevated'], color: c.ink, '&:hover': { backgroundColor: c['hairline-soft'] } } },
         ] },
-        MuiIconButton: { styleOverrides: { root: { borderRadius: tokens.radius.full, padding: 0, width: tokens.size.control, height: tokens.size.control, border: `1px solid ${c.hairline}`, backgroundColor: c['canvas-elevated'], color: c.ink } } },
-        MuiTextField: { defaultProps: { size: 'small', variant: 'outlined', fullWidth: true } },
+        MuiIconButton: { styleOverrides: { root: { borderRadius: tokens.radius.full, padding: 0, width: tokens.size.control, height: tokens.size.control, border: `1px solid ${c.hairline}`, backgroundColor: c['canvas-elevated'], color: c.ink, '&.Mui-focusVisible': { outline: `2px solid ${c.link}`, outlineOffset: 3 } }, sizeSmall: { width: 32, height: 32, borderColor: 'transparent', backgroundColor: 'transparent', '&:hover': { backgroundColor: c['hairline-soft'] } } } },
+        MuiTextField: { defaultProps: { size: 'small', variant: 'outlined', fullWidth: true, slotProps: { inputLabel: { shrink: true } } } },
+        MuiSelect: { defaultProps: { displayEmpty: true } },
         MuiInputBase: { styleOverrides: { input: { '&::placeholder': { color: c.faint, opacity: 1 } } } },
         MuiOutlinedInput: { styleOverrides: {
             root: { backgroundColor: c['canvas-elevated'], minHeight: tokens.size.control, ...type['body-md'], '& .MuiOutlinedInput-notchedOutline': { borderColor: c.hairline }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: c.ink }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: c.link, borderWidth: 2 }, '&.MuiInputBase-multiline': { padding: '8px 12px' } },
             input: { padding: '8px 12px', '&.MuiInputBase-inputMultiline': { padding: 0 } },
+            notchedOutline: { top: 0, '& legend': { display: 'none' } },
         } },
-        MuiInputLabel: { styleOverrides: { root: { ...type['label-sm'], '&.Mui-focused': { color: c['link-deep'] } } } },
+        MuiInputLabel: { styleOverrides: { root: { ...type['label-sm'], position: 'static', transform: 'none', maxWidth: '100%', marginBottom: 8, color: c.ink, '&.Mui-focused': { color: c['link-deep'] } }, shrink: { transform: 'none' } } },
         MuiFormLabel: { styleOverrides: { root: { '&.Mui-error': { color: c['error-deep'] } } } },
         MuiFormHelperText: { styleOverrides: { root: { ...type['body-sm'], marginLeft: 0, '&.Mui-error': { color: c['error-deep'] } } } },
         MuiPaper: { defaultProps: { elevation: 0 }, styleOverrides: { rounded: { borderRadius: tokens.radius.panel } } },
@@ -129,6 +132,7 @@ export const theme = createTheme({
                 '&.MuiChip-outlined.MuiChip-colorError': { color: c['error-deep'] },
             },
             colorDefault: { backgroundColor: c['hairline-soft'], color: c.body },
+            label: { overflow: 'hidden', textOverflow: 'ellipsis' },
         } },
         MuiAlert: { styleOverrides: {
             root: { borderRadius: tokens.radius.control, alignItems: 'center',
@@ -142,6 +146,8 @@ export const theme = createTheme({
         MuiDialogActions: { styleOverrides: { root: { padding: '16px 24px 24px', gap: 8 } } },
         MuiMenu: { styleOverrides: { paper: { boxShadow: tokens.elevation, marginTop: 8 } } },
         MuiMenuItem: { styleOverrides: { root: { ...type['body-md'], minHeight: 36 } } },
+        MuiCheckbox: { styleOverrides: { root: { color: c.mute, padding: 8, '&.Mui-focusVisible': { outline: `2px solid ${c.link}`, outlineOffset: -2 } } } },
+        MuiTablePagination: { styleOverrides: { root: { color: c.body }, selectLabel: type['body-sm'], displayedRows: { ...type['body-sm'], fontVariantNumeric: 'tabular-nums' } } },
         MuiTab: { styleOverrides: { root: { textTransform: 'none', minHeight: 44, ...type['label-sm'] } } },
         MuiTabs: { styleOverrides: { root: { minHeight: 44 }, indicator: { height: 2 } } },
         MuiTableCell: { styleOverrides: { root: { ...type['body-md'], padding: '12px 16px', borderColor: c.hairline }, head: { ...type['label-sm'], color: c.body, backgroundColor: c.canvas } } },

@@ -1,16 +1,17 @@
 import { useMemo, useState } from 'react';
-import { Button, IconButton, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
+import { Button, IconButton, InputAdornment, MenuItem, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import Add from '@mui/icons-material/Add';
 import DeleteOutlined from '@mui/icons-material/DeleteOutlined';
 import EditOutlined from '@mui/icons-material/EditOutlined';
 import VisibilityOutlined from '@mui/icons-material/VisibilityOutlined';
+import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import { Link as RouterLink } from 'react-router-dom';
 import type { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid';
 import { api } from '../domain/api';
 import type { User } from '../domain/types';
 import { useApp } from '../app/AppContext';
 import { DataTable } from '../shared/DataTable';
-import { AsyncState, ConfirmDialog, FilterBar, PageLayout, StatusBadge } from '../shared/ui';
+import { AsyncState, ConfirmDialog, EntityAvatar, FilterBar, PageLayout, StatusBadge } from '../shared/ui';
 import { useAsync } from '../shared/useAsync';
 export function UsersPage() {
     const { settings, notify } = useApp();
@@ -29,9 +30,9 @@ export function UsersPage() {
     const clearSelection = () => setSelection({ type: 'include', ids: new Set() });
     const resetFilters = (update: () => void) => { update(); setPage(0); clearSelection(); };
     const columns = useMemo<GridColDef<User>[]>(() => [
-        { field: 'name', headerName: 'Name', flex: 1, minWidth: 170 },
+        { field: 'name', headerName: 'Name', flex: 1, minWidth: 190, renderCell: ({ row }) => <Stack direction="row" sx={{ alignItems: 'center', gap: 2, minWidth: 0 }}><EntityAvatar name={row.name} size="small"/><Typography variant="body2" noWrap>{row.name}</Typography></Stack> },
         { field: 'email', headerName: 'Email', flex: 1.3, minWidth: 210 },
-        { field: 'role', headerName: 'Role', width: 110, renderCell: ({ row }) => <StatusBadge status={row.role}/> },
+        { field: 'role', headerName: 'Role', width: 110, renderCell: ({ row }) => <Typography variant="body2" color="text.secondary">{row.role.charAt(0).toUpperCase() + row.role.slice(1)}</Typography> },
         { field: 'status', headerName: 'Status', width: 130, renderCell: ({ row }) => <StatusBadge status={row.status}/> },
         { field: 'actions', headerName: 'Actions', sortable: false, width: 100, renderCell: ({ row }) => <Stack direction="row" spacing={1}><Tooltip title="View user"><IconButton component={RouterLink} to={`/users/${row.id}`} aria-label={`View ${row.name}`} size="small"><VisibilityOutlined fontSize="small"/></IconButton></Tooltip><Tooltip title="Edit user"><IconButton component={RouterLink} to={`/users/${row.id}/edit`} aria-label={`Edit ${row.name}`} size="small"><EditOutlined fontSize="small"/></IconButton></Tooltip></Stack> },
     ], []);
@@ -58,11 +59,12 @@ export function UsersPage() {
     };
     return <PageLayout title="Users" description="Manage workspace members and access." actions={<Button component={RouterLink} to="/users/new" variant="contained" startIcon={<Add />}>Add user</Button>}>
     <FilterBar>
-      <TextField label="Search users" placeholder="Search by name or email" value={search} onChange={event => resetFilters(() => setSearch(event.target.value))}/>
+      <TextField label="Search users" placeholder="Search by name or email" value={search} onChange={event => resetFilters(() => setSearch(event.target.value))} slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchOutlined fontSize="small" /></InputAdornment> } }}/>
       <TextField select label="Role" value={role} onChange={event => resetFilters(() => setRole(event.target.value))}><MenuItem value="">All roles</MenuItem>{['admin', 'editor', 'viewer'].map(value => <MenuItem key={value} value={value}>{value.charAt(0).toUpperCase() + value.slice(1)}</MenuItem>)}</TextField>
       <TextField select label="Status" value={status} onChange={event => resetFilters(() => setStatus(event.target.value))}><MenuItem value="">All statuses</MenuItem>{['active', 'invited', 'suspended'].map(value => <MenuItem key={value} value={value}>{value.charAt(0).toUpperCase() + value.slice(1)}</MenuItem>)}</TextField>
       <Button color="error" disabled={!selection.ids.size} startIcon={<DeleteOutlined />} onClick={() => setConfirm(true)}>Delete selected{selection.ids.size ? ` (${selection.ids.size})` : ''}</Button>
     </FilterBar>
+    <Typography variant="caption" color="text.secondary">{data?.total ?? 0} users{loading ? ' · Updating…' : ''}</Typography>
     <AsyncState loading={!data && loading} error={error} onRetry={reload}>
       <DataTable rows={data?.items ?? []} columns={columns} rowCount={data?.total ?? 0} loading={loading} paginationMode="server" sortingMode="server" paginationModel={{ page, pageSize }} onPaginationModelChange={model => { setPage(model.page); setPageSize(model.pageSize); clearSelection(); }} sortModel={sort} onSortModelChange={model => resetFilters(() => setSort(model))} rowSelectionModel={selection} onRowSelectionModelChange={setSelection} checkboxSelection/>
     </AsyncState>

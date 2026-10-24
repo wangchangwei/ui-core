@@ -3,6 +3,7 @@ import FolderOutlined from "@mui/icons-material/FolderOutlined";
 import PeopleOutlined from "@mui/icons-material/PeopleOutlined";
 import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
 import WidgetsOutlined from "@mui/icons-material/WidgetsOutlined";
+import AccountTreeOutlined from "@mui/icons-material/AccountTreeOutlined";
 import type { Permission } from '../domain/permissions';
 export const navigation: {
     label: string;
@@ -14,6 +15,7 @@ export const navigation: {
     { label: 'Overview', path: '/dashboard', permission: 'dashboard:read', icon: DashboardOutlined, group: 'Workspace' },
     { label: 'Projects', path: '/projects', permission: 'projects:read', icon: FolderOutlined, group: 'Workspace' },
     { label: 'Users', path: '/users', permission: 'users:read', icon: PeopleOutlined, group: 'Workspace' },
+    { label: 'Scenario Management', path: '/scenarios', permission: 'scenarios:read', icon: AccountTreeOutlined, group: 'Workspace' },
     { label: 'Design system', path: '/design-system', permission: 'design:read', icon: WidgetsOutlined, group: 'Resources' },
     { label: 'Settings', path: '/settings', permission: 'settings:write', icon: SettingsOutlined, group: 'Resources' },
 ];

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { projectSchema, userSchema } from './schemas';
+import { projectSchema, scenarioSchema, userSchema } from './schemas';
 
 describe('domain schemas', () => {
   it('validates users and rejects malformed emails', () => {
@@ -14,5 +14,13 @@ describe('domain schemas', () => {
     expect(projectSchema.safeParse({ ...valid, startDate: '2026-02-30' }).success).toBe(false);
     expect(projectSchema.safeParse({ ...valid, startDate: '2026-03-01' }).success).toBe(false);
     expect(projectSchema.safeParse({ ...valid, name: '   ' }).success).toBe(false);
+  });
+
+  it('validates scenario names, categories, and named subflows', () => {
+    const valid = { name: 'Manager onboarding', description: 'Prepare a new manager.', categoryIds: ['onboarding', 'customized'], subflows: ['Account setup'], visibility: 'visible' };
+    expect(scenarioSchema.safeParse(valid).success).toBe(true);
+    expect(scenarioSchema.safeParse({ ...valid, categoryIds: [] }).success).toBe(false);
+    expect(scenarioSchema.safeParse({ ...valid, categoryIds: ['beta', 'beta'] }).success).toBe(false);
+    expect(scenarioSchema.safeParse({ ...valid, subflows: [''] }).success).toBe(false);
   });
 });

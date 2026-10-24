@@ -42,3 +42,45 @@
 ## Vercel 原稿对齐
 
 视觉基准现改为用户提供的 `docs/reference/DESIGN-vercel.md`。本次重新生成 48 张截图，并新增浏览器样式断言：标题/按钮/正文行高、输入边框及内边距、卡片 12px、弹窗 16px、营销 100px、分类 64px、圆形图标按钮。后台功能和桌面最低宽度保持原产品范围。
+
+## 2026-10-24 — Vercel / Geist 视觉精修
+
+本次在 `codex/ui-framework` 保留 MUI，精修登录、导航、Dashboard、表格、项目卡片、表单和详情页。说明与官方参考链接见 `vercel-refinement.md`。
+
+最终验证：
+
+- `npm run check`：ESLint 零警告、TypeScript strict、11 个文件共 50 项测试、Vite 生产构建全部通过。
+- `npm run test:e2e -- --workers=2`：12 项全部通过；包含 1280/1440/1920 三种宽度及窄窗口提示。
+- 扩展浏览器契约：固定标签在输入上方、Email → Password → Sign in 键盘顺序、按钮可见蓝色焦点、详情定义列表结构、危险操作文字颜色。
+- Impeccable 手动静态检测执行一次，返回 `[]`。项目 `.impeccable/design.json` 与规范不同步是既有辅助文件状态，本轮以 DESIGN.md 和源稿契约为准。
+- 独立审查发现的详情定义列表嵌套已修复；回归测试发现的 Typography 默认标题语义已修复。未通过放宽断言规避问题。
+- 原稿 SHA-256 保持 `12d363de1be5656965c0dffc127dab1763d44970d0caf86feee887ad46073127`。
+
+最新执行日志保存在 `artifacts/vercel-refinement/`。调整前的 1440px 截图在 `artifacts/vercel-before/`，当前页面截图在 `artifacts/screenshots/`。人工对比检查覆盖登录、仪表盘、用户表格、项目卡片、表单、详情、个人资料和设置；自动矩阵覆盖全部 15 类页面，无页面横向溢出和浏览器错误。
+
+边界：桌面 Chrome 验证，未单独执行 Edge；前端本地模拟认证/数据；不支持移动端和深色模式；不是完整的无障碍认证。业务接口与依赖版本没有改变。
+
+## 2026-10-24 — Scenario Management 模板
+
+新增 `/scenarios` 卡片目录模板及中文复用规范，参考用户提供的 Scenario Management 页面结构，并遵循 `docs/reference/DESIGN-vercel.md` 现有视觉契约。`artifacts/screenshots/1280-scenarios.png`、`1440-scenarios.png` 和 `1920-scenarios.png` 是最终检查截图；三个宽度均通过页面横向溢出检查。卡片分页标签的重复浮动标签问题已修正。
+
+- `npm run check`：ESLint 零警告、TypeScript strict、11 个文件共 52 项测试、Vite 生产构建全部通过。
+- `npm run test:e2e -- --workers=2`：14 项通过；覆盖场景搜索/分类、Graph 视图、预览、创建、JSON 导入、删除确认、Viewer 只读权限，以及 1280/1440/1920 页面截图矩阵。
+- `git diff --check` 通过；Impeccable 静态检测一次返回 `[]`。
+
+前端持久化仍为本地演示存储；Graph 是场景与真实子流程名称的关系摘要，不包含可编辑的流程画布。
+
+## 2026-10-24 — 场景目录 Impeccable 精修
+
+本轮仅调整场景目录及其模板规范：结果计数合并到工具栏、搜索和视图控件底部对齐、全宽标题提供预览入口、重复装饰图标移除、卡片操作归入子流程行、时间使用时钟图标。Graph 子流程竖排并保持同排卡片分隔线对齐；新建弹窗使用 600px 上限，修复子流程逐字输入时逗号丢失的问题。
+
+- `npm run check` 全部通过：ESLint 零警告、TypeScript、52 项测试和生产构建。
+- `npx playwright test e2e/scenarios.spec.ts e2e/visual.spec.ts --workers=2`：6 项通过，包含三个桌面宽度、Viewer 权限、标题预览、清除搜索后的焦点恢复，以及逐字输入子流程后保存/预览。
+- 人工截图检查覆盖 1280/1440/1920 的 Cards、1440 的 Graph 与新建弹窗。目录截图保存在 `artifacts/screenshots/*-scenarios.png`，关系图、弹窗和执行日志在 `artifacts/scenario-polish/`。
+- 设计检测返回 `[]`，`git diff --check` 通过；未增加视觉 token 或依赖。
+
+## 2026-10-24 — 后台标题与宽度统一
+
+所有后台业务页以 `/scenarios` 为基准，共用填满工作区的 `PageLayout`、32/40 标题、14/20 说明、页头操作和分隔线。移除 AppShell 的 1200px 上限及场景页的独立 `wide` 布局，保留左右 32px 内距。登录与居中错误提示仍使用各自的专用结构。
+
+`npm run check` 全部通过（52 项测试）；视觉 Playwright 4 项通过，覆盖 1280/1440/1920 及窄窗口提示。矩阵新增断言，逐个比较业务页与场景页的页头宽度、标题左边缘/顶部位置、字号和行高；全部通过，无页面横向溢出或浏览器错误。人工截图检查覆盖 Dashboard、新建用户和用户表格。日志保存在 `artifacts/layout-alignment/`。

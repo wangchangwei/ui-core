@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../app/AppContext';
 import { Brand } from '../app/AppShell';
-import { FormField } from '../shared/ui';
+import { FormField, WorkspaceIllustration } from '../shared/ui';
 const loginSchema = z.object({ email: z.string().email('Enter a valid email address.'), password: z.string().min(1, 'Enter your password.') });
 type LoginInput = z.infer<typeof loginSchema>;
 export function LoginPage() {
@@ -29,7 +29,7 @@ export function LoginPage() {
     return <Box sx={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
     <Stack sx={{ px: 16, py: 10, justifyContent: 'space-between' }}>
       <Brand />
-      <Box sx={{ maxWidth: 440 }}><Typography component="h2" variant="display" sx={{ maxWidth: '14ch', mb: 6 }}>A clear place to work.</Typography><Typography sx={{ color: 'text.secondary', maxWidth: '42ch' }}>People, projects, and the details that keep work moving. Everything in one consistent workspace.</Typography><Divider sx={{ my: 8 }}/><Stack direction="row" spacing={8}><Typography variant="body2">People</Typography><Typography variant="body2">Projects</Typography><Typography variant="body2">Progress</Typography></Stack></Box>
+      <Box sx={{ width: '100%', maxWidth: 440, mx: 'auto', py: 8 }}><Typography component="h2" variant="display" sx={{ maxWidth: '14ch', mb: 6 }}>A clear place to work.</Typography><Typography variant="lead" sx={{ color: 'text.secondary', maxWidth: '42ch' }}>People, projects, and the details that keep work moving. Everything in one consistent workspace.</Typography><WorkspaceIllustration /></Box>
       <Typography variant="caption" sx={{ color: 'text.secondary' }}>Local demo · Your changes stay in this browser.</Typography>
     </Stack>
     <Stack sx={{ bgcolor: 'background.paper', borderLeft: 1, borderColor: 'divider', justifyContent: 'center', px: 16 }}>
@@ -37,12 +37,12 @@ export function LoginPage() {
         <Typography variant="h1" component="h1">Sign in to your workspace</Typography><Typography sx={{ color: 'text.secondary', mt: 2, mb: 8 }}>Welcome back. Choose an account to get started.</Typography>
         <Box component="form" noValidate onSubmit={handleSubmit(submit)}><Stack spacing={6}>
           {error && <Alert severity="error">{error}</Alert>}
-          <FormField control={control} name="email" label="Email" type="email" autoComplete="username" autoFocus/>
+          <FormField control={control} name="email" label="Email" type="email" autoComplete="username"/>
           <FormField control={control} name="password" label="Password" type="password" autoComplete="current-password"/>
           <Button type="submit" variant="contained" disabled={isSubmitting}>{isSubmitting ? 'Signing in…' : 'Sign in'}</Button>
         </Stack></Box>
         <Divider sx={{ my: 8 }}/>
-        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>Explore with a demo account</Typography><Stack direction="row" spacing={3}>
+        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>Explore with a demo account</Typography><Stack direction="row" spacing={3} sx={{ '& > button': { flex: 1 } }}>
           <Button variant="outlined" disabled={isSubmitting} onClick={() => { setError(null); reset({ email: 'admin@example.com', password: 'Demo123!' }); }}>Use Admin</Button><Button variant="outlined" disabled={isSubmitting} onClick={() => { setError(null); reset({ email: 'viewer@example.com', password: 'Demo123!' }); }}>Use Viewer</Button>
         </Stack><Typography variant="caption" sx={{ display: 'block', color: 'text.secondary', mt: 4 }}>admin@example.com / viewer@example.com<br />Demo password: Demo123!</Typography>
       </Box>

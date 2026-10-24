@@ -4,7 +4,7 @@ import { mkdir } from 'node:fs/promises';
 const views = [
   ['dashboard', '/dashboard'], ['users', '/users'], ['user-new', '/users/new'],
   ['user-detail', '/users/user-1'], ['user-edit', '/users/user-1/edit'],
-  ['projects', '/projects'], ['project-new', '/projects/new'], ['project-detail', '/projects/project-1'],
+  ['projects', '/projects'], ['project-new', '/projects/new'], ['project-detail', '/projects/project-1'], ['scenarios', '/scenarios'],
   ['project-edit', '/projects/project-1/edit'], ['settings', '/settings'], ['profile', '/profile'],
   ['design-system', '/design-system'], ['forbidden', '/403'], ['not-found', '/missing'],
 ] as const;
@@ -22,12 +22,29 @@ for (const width of [1280, 1440, 1920]) {
     await page.screenshot({ path: `artifacts/screenshots/${width}-login.png`, fullPage: true });
     await page.getByRole('button', { name: 'Sign in', exact: true }).click();
     await expect(page).toHaveURL(/\/dashboard$/);
+    await page.goto('/scenarios');
+    const referenceHeader = await page.locator('main header').first().boundingBox();
+    const referenceTitle = await page.locator('main h1').boundingBox();
+    expect(referenceHeader).not.toBeNull();
+    expect(referenceTitle).not.toBeNull();
     for (const [name, route] of views) {
       await page.goto(route);
       await expect(page.locator('main h1')).toBeVisible();
       if (name !== 'design-system') await expect(page.getByRole('progressbar')).toHaveCount(0);
       if (name === 'projects') await expect(page.getByText('Website redesign', { exact: true })).toBeVisible();
       if (name === 'users') await expect(page.getByRole('grid')).toBeVisible();
+      if (name === 'scenarios') await expect(page.getByRole('article')).toHaveCount(12);
+      if (name !== 'forbidden' && name !== 'not-found') {
+        const header = await page.locator('main header').first().boundingBox();
+        const title = page.locator('main h1');
+        const titleBox = await title.boundingBox();
+        expect(header!.x, `${name}: header left edge`).toBeCloseTo(referenceHeader!.x, 0);
+        expect(header!.width, `${name}: header width`).toBeCloseTo(referenceHeader!.width, 0);
+        expect(titleBox!.x, `${name}: title left edge`).toBeCloseTo(referenceTitle!.x, 0);
+        expect(titleBox!.y, `${name}: title top edge`).toBeCloseTo(referenceTitle!.y, 0);
+        await expect(title).toHaveCSS('font-size', '32px');
+        await expect(title).toHaveCSS('line-height', '40px');
+      }
       // Showcase deliberately displays a loading state on its first tab.
       await page.evaluate(() => document.fonts.ready);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${name}: page overflow`).toBe(true);

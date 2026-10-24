@@ -13,6 +13,17 @@ test('rendered pages use the supplied Vercel visual contract', async ({ page }) 
   await expect(password).toHaveCSS('padding', '8px 12px');
   await expect(password).toHaveCSS('line-height', '20px');
   await expect(password.locator('..').locator('fieldset')).toHaveCSS('border-color', 'rgb(235, 235, 235)');
+  // Static labels remain associated with fields, and disabling ripples must not remove keyboard focus.
+  const email = page.getByLabel('Email', { exact: true });
+  const emailLabel = page.locator('label').filter({ hasText: /^Email$/ });
+  expect((await emailLabel.boundingBox())!.y + (await emailLabel.boundingBox())!.height).toBeLessThan((await email.boundingBox())!.y);
+  await email.focus();
+  await page.keyboard.press('Tab');
+  await expect(password).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(signIn).toBeFocused();
+  await expect(signIn).toHaveCSS('outline-style', 'solid');
+  await expect(signIn).toHaveCSS('outline-color', 'rgb(0, 112, 243)');
   await signIn.hover();
   await expect(signIn).toHaveCSS('background-color', 'rgb(77, 77, 77)');
   await signIn.click();
@@ -24,6 +35,11 @@ test('rendered pages use the supplied Vercel visual contract', async ({ page }) 
   await expect(card.locator('.MuiCardContent-root')).toHaveCSS('padding', '24px');
   await expect(card.getByRole('heading')).toHaveCSS('font-size', '20px');
   await expect(card.locator('.MuiChip-root')).toHaveCSS('color', 'rgb(7, 97, 209)');
+  await card.getByRole('link', { name: 'View details' }).click();
+  await expect(page.locator('dl > div > dt')).toHaveCount(3);
+  await expect(page.locator('dl dl')).toHaveCount(0);
+  await page.goto('/settings');
+  await expect(page.getByRole('button', { name: 'Reset demo data', exact: true })).toHaveCSS('color', 'rgb(197, 0, 0)');
   await page.goto('/design-system');
   await expect(page.getByRole('button', { name: 'Start deploying', exact: true })).toHaveCSS('border-radius', '100px');
   await expect(page.getByRole('button', { name: 'Start deploying', exact: true })).toHaveCSS('font-size', '16px');

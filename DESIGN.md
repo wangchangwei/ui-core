@@ -104,7 +104,7 @@ Geist Variable 用于界面，Geist Mono 用于代码和大写 eyebrow（原稿�
 
 ## Layout
 
-原稿的内容宽度约为 1200px；后台内容区在此基础上保留左侧导航 232px、顶栏 64px、最小桌面宽度 1280px 和 1440px 设计基准。宽表格只在内容区横向滚动，页面本身不溢出；不添加移动端或营销页布局。
+所有后台业务页面以 `/scenarios` 为标题与宽度基准：内容填满侧栏以外的可用工作区，左右各保留 32px 内距，不设置 1200px 最大宽度。左侧导航 232px、顶栏 64px、最小桌面宽度 1280px 和 1440px 设计基准保持一致。原稿约 1200px 的居中容器用于营销参考，不限制后台工作区。宽表格只在内容区横向滚动，页面本身不溢出。
 
 间距只使用 4px 基准中的 [4, 8, 12, 16, 24, 32, 40, 64, 96, 128]。MUI 数字间距直接映射到该基准。应用按钮最小高度 40px、水平内边距 6px；营销变体（如组件示例需要）使用 44px 高、14px 水平内边距和 pill 圆角。导航采用 full 圆角，表格行高约 48px 是后台密度扩展。
 
@@ -119,7 +119,9 @@ Geist Variable 用于界面，Geist Mono 用于代码和大写 eyebrow（原稿�
 - AppShell：导航、面包屑、顶栏和账户菜单；导航状态使用 full 圆角和主题语义色。
 - PageLayout / PageSection：统一标题、说明、操作区和内容区；标题层级消费 heading-lg 或 heading-md。
 - FilterBar / DataTable：统一筛选、结果、分页和表格滚动；业务页面不直接引入 DataGrid。
-- FormField：RHF 与 MUI 字段适配；输入使用白色表面、hairline 边框、6px 圆角和 8px/12px 内边距，hover 使用 ink，focus 使用 link。
+- FormSection / FormActions：表单以说明列和字段列分组，区块间细线分隔；底部统一展示保存提示和右对齐操作。
+- DetailRow / EntityAvatar：详情字段采用定义列表；人员标识使用中性首字母头像，不随机引入颜色。
+- FormField：RHF 与 MUI 字段适配；输入使用白色表面、hairline 边框、6px 圆角和 8px/12px 内边距，hover 使用 ink，focus 使用 link。标签固定在控件上方，标签和控件间隔 8px；不使用浮动缩小标签，不能用 placeholder 替代标签。
 - StatusBadge：共享语义色、文字和图标；成功映射蓝色 link，不创建绿色替代 token。
 - ConfirmDialog / useUnsavedChanges：删除确认、未保存离开保护、焦点恢复和键盘操作。
 - AsyncState：加载、空数据、搜索无结果、失败和重试状态。
@@ -134,3 +136,14 @@ Geist Variable 用于界面，Geist Mono 用于代码和大写 eyebrow（原稿�
 - 保持公共组件与主题同步；若源稿 token 变化，先改 token，再更新组件和截图验收。
 - 不创建配置驱动的通用页面生成器，不用 eslint-disable 绕过约束；例外写入 docs/style-exceptions.json。
 - 静态检查不能代替视觉、键盘和状态验收；在 1280、1440、1920px 检查页面族和弹窗。
+
+## Vercel 视觉精修
+
+页面头部用 32px 标题、说明和同一基线的操作区，下方细线明确内容边界。筛选标签与表单标签一致，控件底部对齐。项目卡片固定标题、描述、负责人和日期的层级，操作放在独立底栏。Dashboard 数字和图表必须来自业务数据，不展示虚构增长率。图表去除多余轴线和默认数据点，独立图例始终同时显示状态文字和数量。
+
+界面以平面材质为主，按钮不使用 Material 水波纹；键盘焦点仍必须清晰可见。32px 小型图标按钮用于表格和顶栏，40px 圆形按钮保留为明确的源稿组件变体。认证页几何插图仅消费源稿渐变，业务页面不铺装饰性渐变。公开资料、取舍与验收记录见 `docs/vercel-refinement.md`。
+
+
+## 场景管理目录模板
+
+`/scenarios` 与其他业务页面共用 `PageLayout`：32/40 页面标题、14/20 说明、右侧操作、标题下方细分隔线，以及填满工作区的内容宽度。目录按 264px 最小卡片宽度自适应多列。类别数来自完整数据集，多类别可重叠；搜索、排序、分页在领域服务完成。卡片预览、子流程图、可见性、复制、删除、JSON 导入及分类清单遵循 [docs/scenario-management-template.md](docs/scenario-management-template.md)。

@@ -1,13 +1,16 @@
 import { auth } from './auth';
 import { can, type Permission } from './permissions';
-import { projectSchema, settingsSchema, userSchema } from './schemas';
-import type { DashboardData, ListQuery, PageResult, Profile, Project, ProjectInput, Settings, User, UserInput } from './types';
+import { projectSchema, scenarioSchema, settingsSchema, userSchema } from './schemas';
+import { seedScenarios } from './scenario-seed';
+import { SCENARIO_CATEGORIES } from './types';
+import type { DashboardData, ListQuery, PageResult, Profile, Project, ProjectInput, Scenario, ScenarioCategoryId, ScenarioInput, ScenarioListQuery, Settings, User, UserInput } from './types';
 const STORAGE_KEY = 'forma:data:v1';
 const VERSION = 1;
 type Store = {
     version: number;
     users: User[];
     projects: Project[];
+    scenarios: Scenario[];
     settings: Settings;
     profiles: Record<string, Profile>;
 };
@@ -43,7 +46,7 @@ function seedStore(): Store {
         const initiatives = ['Website redesign', 'Analytics platform', 'Customer portal', 'Billing automation', 'Mobile onboarding', 'Support workspace', 'Inventory sync', 'Identity migration', 'Reporting suite', 'Partner API', 'Design system rollout', 'Data warehouse', 'Notification center', 'Search relevance', 'Pricing experiments', 'Team directory', 'Document approvals', 'Fraud monitoring', 'Release automation', 'Localization hub', 'Workflow builder', 'Consent manager', 'Campaign studio', 'Returns portal', 'Quality dashboard', 'Forecasting model', 'Security center', 'Vendor management', 'Help center', 'Developer portal'];
         return { id: `project-${index + 1}`, name: initiatives[index], description: `Cross-functional delivery initiative for the ${initiatives[index].toLowerCase()}.`, ownerId: users[index % users.length].id, status: statuses[index % statuses.length], startDate, endDate, createdAt: `${startDate}T09:00:00.000Z` };
     });
-    return { version: VERSION, users, projects, settings: { appName: 'Forma', pageSize: 25 }, profiles: structuredClone(accountProfiles) };
+    return { version: VERSION, users, projects, scenarios: seedScenarios(), settings: { appName: 'Forma', pageSize: 25 }, profiles: structuredClone(accountProfiles) };
 }
 function writeStore(store: Store): void { localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); }
 function readStore(): Store {
@@ -57,6 +60,9 @@ function readStore(): Store {
         const value = JSON.parse(raw) as Store;
         if (value.version !== VERSION || !Array.isArray(value.users) || !Array.isArray(value.projects) || !value.settings || !value.profiles)
             throw new Error('invalid shape');
+        // Add the new catalog to older v1 demo stores without discarding existing edits.
+        if (!Array.isArray(value.scenarios))
+            value.scenarios = seedScenarios();
         if (!settingsSchema.safeParse(value.settings).success || Object.keys(accountProfiles).some((key) => {
             const profile = value.profiles[key];
             return !profile || typeof profile.displayName !== 'string' || typeof profile.email !== 'string' || (profile.role !== 'admin' && profile.role !== 'viewer');
@@ -66,6 +72,8 @@ function readStore(): Store {
             throw new Error('invalid users');
         if (value.projects.some((project) => !project || typeof project.id !== 'string' || typeof project.createdAt !== 'string' || !projectSchema.safeParse({ name: project.name, description: project.description, ownerId: project.ownerId, status: project.status, startDate: project.startDate, endDate: project.endDate }).success))
             throw new Error('invalid projects');
+        if (value.scenarios.some((scenario) => !scenario || typeof scenario.id !== 'string' || typeof scenario.updatedAt !== 'string' || !scenarioSchema.safeParse({ name: scenario.name, description: scenario.description, categoryIds: scenario.categoryIds, subflows: scenario.subflows, visibility: scenario.visibility }).success))
+            throw new Error('invalid scenarios');
         return value;
     }
     catch {
@@ -82,7 +90,7 @@ function requirePermission(permission: Permission): void {
 }
 function currentSession() { const session = auth.getSession(); if (!session)
     throw new Error('Authentication required'); return session; }
-function page<T>(items: T[], query: ListQuery | undefined, defaultPageSize: number): PageResult<T> {
+function page<T>(items: T[], query: { page?: number; pageSize?: number } | undefined, defaultPageSize: number): PageResult<T> {
     const pageSize = Math.max(1, query?.pageSize ?? defaultPageSize);
     const currentPage = Math.max(1, query?.page ?? 1);
     return { total: items.length, items: items.slice((currentPage - 1) * pageSize, currentPage * pageSize) };
@@ -116,6 +124,18 @@ export const api = {
         throw new Error('Project not found'); const saved: Project = { ...input, id: existing?.id ?? id(), createdAt: existing?.createdAt ?? `${today()}T09:00:00.000Z` }; store.projects = existing ? store.projects.map((item) => item.id === projectId ? saved : item) : [saved, ...store.projects]; writeStore(store); return saved; },
     async deleteProject(projectId: string): Promise<void> { requirePermission('projects:write'); await wait(); const store = readStore(); if (!store.projects.some((project) => project.id === projectId))
         throw new Error('Project not found'); store.projects = store.projects.filter((project) => project.id !== projectId); writeStore(store); },
+    async listScenarios(query?: ScenarioListQuery): Promise<PageResult<Scenario>> { requirePermission('scenarios:read'); await wait(); const items = readStore().scenarios.filter((scenario) => (!query?.search || `${scenario.name} ${scenario.description}`.toLowerCase().includes(query.search.toLowerCase())) && (!query?.categoryId || scenario.categoryIds.includes(query.categoryId))); return page(sort(items, query), query, 12); },
+    async getScenarioCounts(): Promise<{ total: number } & Record<ScenarioCategoryId, number>> { requirePermission('scenarios:read'); await wait(); const scenarios = readStore().scenarios; return { total: scenarios.length, ...Object.fromEntries(SCENARIO_CATEGORIES.map(({ id: categoryId }) => [categoryId, scenarios.filter((scenario) => scenario.categoryIds.includes(categoryId)).length])) } as { total: number } & Record<ScenarioCategoryId, number>; },
+    async saveScenario(input: ScenarioInput): Promise<Scenario> { requirePermission('scenarios:write'); await wait(); const parsed = scenarioSchema.safeParse(input); if (!parsed.success)
+        throw new Error(parsed.error.issues[0]?.message ?? 'Invalid scenario'); const store = readStore(); const saved: Scenario = { ...parsed.data, id: id(), updatedAt: new Date().toISOString() }; store.scenarios = [saved, ...store.scenarios]; writeStore(store); return saved; },
+    async importScenarios(inputs: ScenarioInput[]): Promise<number> { requirePermission('scenarios:write'); await wait(); if (!inputs.length || inputs.length > 100)
+        throw new Error('Choose a JSON file with between 1 and 100 scenarios'); const parsed = inputs.map((input) => scenarioSchema.safeParse(input)); const invalid = parsed.find((result) => !result.success); if (invalid && !invalid.success)
+        throw new Error(invalid.error.issues[0]?.message ?? 'Invalid scenario'); const store = readStore(); const imported = parsed.map((result) => { if (!result.success)
+        throw new Error('Invalid scenario'); return { ...result.data, id: id(), updatedAt: new Date().toISOString() }; }); store.scenarios = [...imported, ...store.scenarios]; writeStore(store); return imported.length; },
+    async setScenarioVisibility(scenarioId: string, visibility: Scenario['visibility']): Promise<Scenario> { requirePermission('scenarios:write'); await wait(); const store = readStore(); const existing = store.scenarios.find((scenario) => scenario.id === scenarioId); if (!existing)
+        throw new Error('Scenario not found'); const saved = { ...existing, visibility, updatedAt: new Date().toISOString() }; store.scenarios = store.scenarios.map((scenario) => scenario.id === scenarioId ? saved : scenario); writeStore(store); return saved; },
+    async deleteScenario(scenarioId: string): Promise<void> { requirePermission('scenarios:write'); await wait(); const store = readStore(); if (!store.scenarios.some((scenario) => scenario.id === scenarioId))
+        throw new Error('Scenario not found'); store.scenarios = store.scenarios.filter((scenario) => scenario.id !== scenarioId); writeStore(store); },
     async getDashboard(): Promise<DashboardData> { requirePermission('dashboard:read'); await wait(); const store = readStore(); const latestMonth = Math.max(1, ...[...store.users, ...store.projects].map((item) => Number(item.createdAt.slice(5, 7)) || 1)); const trend = Array.from({ length: latestMonth }, (_, index) => { const month = String(index + 1).padStart(2, '0'); return { month: `2026-${month}`, projects: store.projects.filter((project) => project.createdAt.startsWith(`2026-${month}`)).length, users: store.users.filter((user) => user.createdAt.startsWith(`2026-${month}`)).length }; }); return { users: store.users.length, activeUsers: store.users.filter((user) => user.status === 'active').length, projects: store.projects.length, activeProjects: store.projects.filter((project) => project.status === 'active').length, completedProjects: store.projects.filter((project) => project.status === 'completed').length, trend, distribution: (['active', 'planned', 'on-hold', 'completed'] as const).map((status) => ({ status, count: store.projects.filter((project) => project.status === status).length })), recentProjects: [...store.projects].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 5) }; },
     async getSettings(): Promise<Settings> { await wait(); return readStore().settings; },
     async saveSettings(input: Settings): Promise<Settings> { requirePermission('settings:write'); await wait(); const result = settingsSchema.safeParse(input); if (!result.success)

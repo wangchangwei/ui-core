@@ -1,10 +1,11 @@
 import { useId, useRef, type ReactNode } from 'react';
-import { Alert, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Stack, TextField, Typography, type SxProps, type TextFieldProps, type Theme } from '@mui/material';
+import { Alert, Avatar, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Stack, TextField, Typography, type SxProps, type TextFieldProps, type Theme } from '@mui/material';
 import CheckCircleOutlined from "@mui/icons-material/CheckCircleOutlined";
 import PauseCircleOutlined from "@mui/icons-material/PauseCircleOutlined";
 import RadioButtonUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 import SearchOff from "@mui/icons-material/SearchOff";
 import { Controller, type Control, type FieldValues, type Path } from 'react-hook-form';
+import { vercelTokens } from '../theme';
 export function PageLayout({ title, description, actions, children }: {
     title: string;
     description?: string;
@@ -12,11 +13,13 @@ export function PageLayout({ title, description, actions, children }: {
     children: ReactNode;
 }) {
     return <Box sx={{ width: '100%', minWidth: 0 }}>
-    <Stack direction="row" sx={{
+    <Stack component="header" direction="row" sx={{
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: "flex-end",
             gap: 6,
-            mb: 8
+            mb: 8,
+            pb: 8,
+            borderBottom: 1, borderColor: 'divider'
         }}>
       <Box sx={{ minWidth: 0 }}><Typography component="h1" variant="h1">{title}</Typography>{description && <Typography sx={{
                 color: "text.secondary",
@@ -59,7 +62,7 @@ export function FilterBar({ children }: {
     children: ReactNode;
 }) {
     return <Stack direction="row" sx={{
-            alignItems: "center",
+            alignItems: "flex-end",
             gap: 3,
             '& > .MuiTextField-root': { width: 180, flexShrink: 0 }, '& > .MuiTextField-root:first-of-type': { width: 280 }, '& > .MuiButton-root:last-child': { ml: 'auto' }, flexWrap: 'wrap'
         }}>{children}</Stack>;
@@ -79,7 +82,7 @@ export function StatusBadge({ status }: {
 }) {
     const value = statusConfig[status.toLowerCase()] ?? { label: status, color: 'default' as const };
     const Icon = value.icon;
-    return <Chip component="span" label={value.label} color={value.color} variant="outlined" icon={Icon ? <Icon /> : undefined} sx={{ '& .MuiChip-icon': { fontSize: 14 }, borderColor: 'divider', bgcolor: 'background.paper' }}/>;
+    return <Chip component="span" label={value.label} color={value.color} variant="outlined" icon={Icon ? <Icon /> : undefined} sx={{ '& .MuiChip-icon': { fontSize: 14 }, borderColor: 'divider', bgcolor: 'background.paper', flexShrink: 0 }}/>;
 }
 export function ConfirmDialog({ open, title, description, onConfirm, onClose, pending = false, confirmLabel, destructive = false }: {
     open: boolean;
@@ -135,4 +138,46 @@ export function FormField<T extends FieldValues>({ name, control, helperText, ..
 } & Omit<TextFieldProps, 'name' | 'value' | 'onChange' | 'defaultValue' | 'error'>) {
     const id = useId();
     return <Controller name={name} control={control} render={({ field: { ref, ...field }, fieldState }) => <TextField id={id} {...props} {...field} inputRef={ref} error={!!fieldState.error} helperText={fieldState.error?.message ?? helperText}/>}/>;
+}
+
+/** Shared composition for explicit forms: a description column and a field column. */
+export function FormSection({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
+    const id = useId();
+    return <Box component="section" aria-labelledby={id} sx={{ display: 'grid', gridTemplateColumns: 'minmax(180px, 1fr) minmax(0, 1.8fr)', gap: 16, p: 6, borderBottom: 1, borderColor: 'divider' }}>
+        <Box><Typography id={id} variant="h2" component="h2">{title}</Typography>{description && <Typography sx={{ color: 'text.secondary', mt: 2, maxWidth: '32ch' }}>{description}</Typography>}</Box>
+        <Stack sx={{ gap: 6, minWidth: 0, maxWidth: 600 }}>{children}</Stack>
+    </Box>;
+}
+export function FormActions({ children, hint }: { children: ReactNode; hint?: string }) {
+    return <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', gap: 6, px: 6, py: 4, bgcolor: 'background.default' }}>
+        <Typography variant="caption" sx={{ color: 'text.secondary' }}>{hint}</Typography><Stack direction="row" sx={{ gap: 3, alignItems: 'center' }}>{children}</Stack>
+    </Stack>;
+}
+export function DetailRow({ label, children }: { label: string; children: ReactNode }) {
+    return <Box component="div" sx={{ display: 'grid', gridTemplateColumns: '180px minmax(0, 1fr)', alignItems: 'center', gap: 6, m: 0, py: 4, borderBottom: 1, borderColor: 'divider', '&:last-child': { borderBottom: 0 } }}>
+        <Typography component="dt" sx={{ color: 'text.secondary' }}>{label}</Typography><Box component="dd" sx={{ m: 0, minWidth: 0, overflowWrap: 'anywhere' }}>{children}</Box>
+    </Box>;
+}
+export function EntityAvatar({ name, size = 'small' }: { name: string; size?: 'small' | 'medium' }) {
+    return <Avatar aria-hidden="true" sx={{ width: size === 'small' ? 28 : 40, height: size === 'small' ? 28 : 40, flexShrink: 0, bgcolor: 'action.hover', color: 'text.secondary', border: 1, borderColor: 'divider', ...vercelTokens.typography['body-sm'] }}>{name.split(' ').slice(0, 2).map(word => word[0]).join('')}</Avatar>;
+}
+/** Geometric workspace motif: source-gradient accents are confined to the auth hero. */
+export function WorkspaceIllustration() {
+    const c = vercelTokens.colors;
+    return <Box aria-hidden="true" sx={{ width: '100%', maxWidth: 440, color: 'text.primary', mt: 10 }}>
+        <svg viewBox="0 0 440 200" fill="none" width="100%" style={{ display: 'block', height: 'auto', aspectRatio: '440 / 200' }}>
+            <defs><linearGradient id="workspace-spectrum" x1="50" y1="120" x2="390" y2="120" gradientUnits="userSpaceOnUse"><stop stopColor={c['gradient-develop-start']}/><stop offset=".5" stopColor={c.violet}/><stop offset="1" stopColor={c.magenta}/></linearGradient></defs>
+            <path d="M32 100H108L220 36L332 100H408M108 100L220 164L332 100M108 100V124L220 188L332 124V100M220 36V12M220 164V188" stroke={c.hairline}/>
+            <path d="M108 100L220 36L332 100L220 164Z" fill={c['canvas-elevated']} stroke={c.hairline}/>
+            <path d="M152 100L220 60L288 100L220 140Z" fill={c.canvas} stroke={c.hairline}/>
+            <path d="M184 100L220 79L256 100L220 121Z" fill={c.ink}/>
+            <path d="M204 101L220 92L236 101L220 110Z" stroke={c['on-primary']}/>
+            <path d="M204 106L220 115L236 106" stroke={c['on-primary']}/>
+            <path d="M32 100H108L220 164L332 100H408" stroke="url(#workspace-spectrum)" strokeWidth="1.5"/>
+            {[32,408].map(x=><circle key={x} cx={x} cy="100" r="3" fill={c['canvas-elevated']} stroke={c.body}/>)}
+        </svg>
+        <Stack direction="row" sx={{ justifyContent: 'space-between', px: 4, mt: 3 }}>
+            {['People', 'Projects', 'Progress'].map(label => <Typography key={label} variant="caption" sx={{ color: 'text.secondary' }}>{label}</Typography>)}
+        </Stack>
+    </Box>;
 }

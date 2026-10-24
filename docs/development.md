@@ -14,11 +14,11 @@
 
 ## 新增表单页
 
-使用 React Hook Form 与现有 schema，字段保持明确而非配置驱动。必填、邮箱和日期关系校验放在 schema；提交时禁用按钮并显示反馈，错误字段获得焦点。编辑表单在值变化后拦截未保存离开，保存成功后回到详情页。服务调用通过 `src/domain/api.ts`，页面不直接操作 localStorage。
+使用 React Hook Form 与现有 schema，字段保持明确而非配置驱动。外层用 `PageSection flush`，表单内用 `FormSection title description` 分组字段，最后使用 `FormActions hint` 放置取消和提交按钮。字段标签固定在输入上方，由主题统一实现；无需自行传入浮动标签样式。必填、邮箱和日期关系校验放在 schema；提交时禁用按钮并显示反馈，错误字段获得焦点。编辑表单在值变化后拦截未保存离开，保存成功后回到详情页。服务调用通过 `src/domain/api.ts`，页面不直接操作 localStorage。
 
 ## 新增详情页
 
-用 `PageLayout` 和 `PageSection` 分组呈现状态、主要字段和关联资源。读取失败可重试；没有关联资源时显示明确空状态。写操作按权限显示并要求确认，关联数据从 domain API 获取。
+用 `PageLayout` 和 `PageSection` 分组呈现状态、主要字段和关联资源。字段使用 `DetailRow label` 的定义列表语义，人员身份使用 `EntityAvatar`。读取失败可重试；没有关联资源时显示明确空状态。写操作按权限显示并要求确认，关联数据从 domain API 获取。
 
 ## 注册导航与权限
 
@@ -89,3 +89,8 @@ UI 页码从 0 开始，模拟服务页码从 1 开始。实际列表如需用�
 ## Vercel token contract
 
 页面标题、正文、按钮和字段必须消费源稿 typography；颜色、边框、圆角和阴影必须消费源稿 token。卡片使用 12px 圆角、24px 内边距和细边框。视觉检查在 1280、1440、1920px 下进行，并同时核对 docs/reference/DESIGN-vercel.md；静态 lint 不能单独证明视觉一致。
+
+
+## 新增资源目录/场景卡片页
+
+查看 [Scenario Management 页面模板](scenario-management-template.md)，复用 `/scenarios` 的 `PageLayout`、全量类别计数、服务端式筛选分页、Cards/Graph 视图、批量导入 schema 校验和权限操作。所有后台业务页面统一填满可用工作区，保留左右 32px 内距；标题、说明、操作和分隔线统一由 `PageLayout` 提供。

@@ -52,6 +52,7 @@ export const router = createBrowserRouter([{ element: <Root />, errorElement: <R
                     page('/projects/new', () => import('../features/ProjectFormPage').then(m => m.ProjectFormPage), 'projects:write'),
                     page('/projects/:id/edit', () => import('../features/ProjectFormPage').then(m => m.ProjectFormPage), 'projects:write'),
                     page('/projects/:id', () => import('../features/ProjectDetailPage').then(m => m.ProjectDetailPage), 'projects:read'),
+                    page('/scenarios', () => import('../features/ScenarioManagementPage').then(m => m.ScenarioManagementPage), 'scenarios:read'),
                     page('/settings', () => import('../features/SettingsPage').then(m => m.SettingsPage), 'settings:write'),
                     page('/profile', () => import('../features/ProfilePage').then(m => m.ProfilePage), 'profile:write'),
                     page('/design-system', () => import('../features/DesignSystemPage').then(m => m.DesignSystemPage), 'design:read'),
