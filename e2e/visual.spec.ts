@@ -6,7 +6,7 @@ const views = [
   ['user-detail', '/users/user-1'], ['user-edit', '/users/user-1/edit'],
   ['projects', '/projects'], ['project-new', '/projects/new'], ['project-detail', '/projects/project-1'], ['scenarios', '/scenarios'],
   ['project-edit', '/projects/project-1/edit'], ['settings', '/settings'], ['profile', '/profile'],
-  ['design-system', '/design-system'], ['forbidden', '/403'], ['not-found', '/missing'],
+  ['design-system', '/design-system'], ['table-list-standard', '/page-standards/table-list'], ['detail-standard', '/page-standards/detail'], ['card-list-standard', '/page-standards/card-list'], ['form-standard', '/page-standards/form'], ['forbidden', '/403'], ['not-found', '/missing'],
 ] as const;
 
 for (const width of [1280, 1440, 1920]) {

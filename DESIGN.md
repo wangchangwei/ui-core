@@ -108,6 +108,8 @@ Geist Variable 用于界面，Geist Mono 用于代码和大写 eyebrow（原稿�
 
 间距只使用 4px 基准中的 [4, 8, 12, 16, 24, 32, 40, 64, 96, 128]。MUI 数字间距直接映射到该基准。应用按钮最小高度 40px、水平内边距 6px；营销变体（如组件示例需要）使用 44px 高、14px 水平内边距和 pill 圆角。导航采用 full 圆角，表格行高约 48px 是后台密度扩展。
 
+根滚动容器统一使用 `html { overflow-y: scroll }`，由 MUI 在打开菜单、下拉和弹窗时锁定根节点并补偿一次滚动条宽度。不要同时预留 `scrollbar-gutter: stable` 与 MUI 的滚动锁定补偿，否则常驻滚动条下内容会重复收窄；不得通过逐页关闭滚动锁定规避全局布局问题。
+
 ## Shapes & elevation
 
 输入、按钮和导航控制使用 control 6px；普通卡片使用 card 12px、24px 内边距；大型面板和对话框使用 panel 16px。category、pill 和 full 只用于原稿定义的品牌或导航形状，不得把业务卡片全部做成胶囊。
@@ -123,6 +125,9 @@ Geist Variable 用于界面，Geist Mono 用于代码和大写 eyebrow（原稿�
 - DetailRow / EntityAvatar：详情字段采用定义列表；人员标识使用中性首字母头像，不随机引入颜色。
 - FormField：RHF 与 MUI 字段适配；输入使用白色表面、hairline 边框、6px 圆角和 8px/12px 内边距，hover 使用 ink，focus 使用 link。标签固定在控件上方，标签和控件间隔 8px；不使用浮动缩小标签，不能用 placeholder 替代标签。
 - StatusBadge：共享语义色、文字和图标；成功映射蓝色 link，不创建绿色替代 token。
+- 分类筛选消费 `category` 变体，选中态由主题通过 `aria-pressed` 提供；一级和二级分类共用形态，不在页面重复定义选中颜色。
+- DataGrid 表头和单元格水平内边距为 16px，分页选择控件为 40px；普通文字按钮（含 small）使用 14/20、最小高度 40px，32px 密度仅保留给小型图标按钮及已明确记录的局部例外。
+- 校验错误与聚焦同时出现时，标签和边框保持 error-deep；状态徽章使用语义 deep 文字与对应 soft 背景，错误没有单独 soft token 时复用中性 soft。
 - ConfirmDialog / useUnsavedChanges：删除确认、未保存离开保护、焦点恢复和键盘操作。
 - AsyncState：加载、空数据、搜索无结果、失败和重试状态。
 
@@ -147,3 +152,7 @@ Geist Variable 用于界面，Geist Mono 用于代码和大写 eyebrow（原稿�
 ## 场景管理目录模板
 
 `/scenarios` 与其他业务页面共用 `PageLayout`：32/40 页面标题、14/20 说明、右侧操作、标题下方细分隔线，以及填满工作区的内容宽度。目录按 264px 最小卡片宽度自适应多列。类别数来自完整数据集，多类别可重叠；搜索、排序、分页在领域服务完成。卡片预览、子流程图、可见性、复制、删除、JSON 导入及分类清单遵循 [docs/scenario-management-template.md](docs/scenario-management-template.md)。
+
+## 四类页面规范
+
+表格列表、详情、卡片列表和表单的统一结构、分类与二级分类、标签、搜索、排序、操作栏、状态和验收要求见 [docs/page-standards.md](docs/page-standards.md)。登录后的 `Resources` 提供四个独立示例入口，展示同一规范的可操作页面示例，并可跳转到对应真实页面；实现必须以这些页面和 Markdown 源文档同时为准。

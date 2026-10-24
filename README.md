@@ -31,9 +31,12 @@ npm run test:e2e   # Playwright，会自动启动/复用本地开发服务
 - `src/domain`：类型、schema、权限和异步模拟 API；页面不直接读种子数据或 localStorage。
 - `src/features`：按业务页面组织的实现，只消费主题和共享组件。
 - `docs/development.md`：新增列表、卡片、表单、详情、导航和后端替换的中文配方。
+- `docs/page-standards.md`：表格列表、详情、卡片列表和表单页的统一实现契约。
 - `DESIGN.md`：实际 token、页面结构、状态和无障碍规则。
 
 业务页面不能直接引入 DataGrid、全局样式或 CSS 文件，也不能写硬编码颜色、字体、间距、圆角和阴影。`npm run lint` 会在 `src/features/**/*.{ts,tsx}` 中报告这些违规；共享主题和共享组件是受控例外边界。
+
+登录后可从 `Resources` 的四个独立示例入口打开规范页面，查看四类可直接参考的页面实现；结构规则与开发指南保留在仓库文档中。
 
 ## 已知限制
 

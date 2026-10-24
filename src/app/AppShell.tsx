@@ -32,10 +32,10 @@ export function AppShell() {
     const [confirmLogout, setConfirmLogout] = useState(false);
     const current = navigation.find((item) => location.pathname.startsWith(item.path));
     const segments = location.pathname.split('/').filter(Boolean);
-    const detail = segments.length > 1 ? segments.at(-1) === 'edit' ? 'Edit' : segments.at(-1) === 'new' ? 'Create' : 'Details' : '';
+    const detail = segments.length > 1 && location.pathname !== current?.path ? segments.at(-1) === 'edit' ? 'Edit' : segments.at(-1) === 'new' ? 'Create' : 'Details' : '';
     return <Box sx={{ display: 'flex', minHeight: '100vh' }}>
     <Box component="aside" aria-label="Workspace sidebar" sx={{ width: tokens.size.sidebar, position: 'fixed', inset: '0 auto 0 0', bgcolor: 'background.paper', borderRight: 1, borderColor: 'divider', display: 'flex', flexDirection: 'column', zIndex: 1100 }}>
-      <Box component={RouterLink} to="/dashboard" sx={{ height: tokens.size.topbar, display: 'flex', alignItems: 'center', px: 6, color: 'text.primary', textDecoration: 'none', borderBottom: 1, borderColor: 'divider' }}><Brand /></Box>
+      <Box component={RouterLink} to="/dashboard" sx={{ height: tokens.size.topbar, flexShrink: 0, display: 'flex', alignItems: 'center', px: 6, color: 'text.primary', textDecoration: 'none', borderBottom: 1, borderColor: 'divider' }}><Brand /></Box>
       <Box sx={{ px: 3, pt: 6, pb: 4 }}><Stack direction="row" sx={{
             gap: 2,
             alignItems: "center",
@@ -43,7 +43,7 @@ export function AppShell() {
         }}><Avatar sx={{ width: 32, height: 32, bgcolor: 'action.hover', color: 'text.primary', fontSize: 12, borderRadius: `${tokens.radius.control}px` }}>W</Avatar><Box sx={{ flex: 1 }}><Typography variant="subtitle2">My workspace</Typography><Typography variant="caption" sx={{
             color: "text.secondary"
         }}>Personal workspace</Typography></Box></Stack></Box>
-      <Box component="nav" aria-label="Main navigation" sx={{ px: 3 }}>
+      <Box component="nav" aria-label="Main navigation" sx={{ px: 3, flex: 1, minHeight: 0, overflowY: 'auto' }}>
         {['Workspace', 'Resources'].map((group) => <Box key={group} sx={{ mb: 6 }}>
           <Typography variant="overline" sx={{
                 color: "text.secondary",
@@ -54,7 +54,7 @@ export function AppShell() {
             }}>{navigation.filter((item) => item.group === group && can(session?.role, item.permission)).map(({ label, path, icon: Icon }) => <Box key={path} component={NavLink} to={path} sx={{ minHeight: 40, display: 'flex', alignItems: 'center', gap: 3, px: 3, textDecoration: 'none', color: 'text.secondary', borderRadius: `${tokens.radius.full}px`, '&.active': { bgcolor: 'action.hover', color: 'text.primary', fontWeight: 500 }, '&:hover': { bgcolor: 'action.hover', color: 'text.primary' } }}><Icon sx={{ fontSize: 20 }}/><Typography variant="body1" sx={{ fontWeight: 'inherit' }}>{label}</Typography></Box>)}</Stack>
         </Box>)}
       </Box>
-      <Box sx={{ mt: 'auto', px: 6, py: 6 }}><Typography variant="body2" sx={{
+      <Box sx={{ mt: 'auto', flexShrink: 0, px: 6, py: 6 }}><Typography variant="body2" sx={{
             color: "text.secondary"
         }}>A consistent place to build.</Typography><Link component={RouterLink} to="/design-system" sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, fontSize: 12 }}>Explore the framework <ChevronRight fontSize="small"/></Link></Box>
       <Divider /><Stack direction="row" sx={{

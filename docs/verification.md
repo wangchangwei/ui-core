@@ -84,3 +84,45 @@
 所有后台业务页以 `/scenarios` 为基准，共用填满工作区的 `PageLayout`、32/40 标题、14/20 说明、页头操作和分隔线。移除 AppShell 的 1200px 上限及场景页的独立 `wide` 布局，保留左右 32px 内距。登录与居中错误提示仍使用各自的专用结构。
 
 `npm run check` 全部通过（52 项测试）；视觉 Playwright 4 项通过，覆盖 1280/1440/1920 及窄窗口提示。矩阵新增断言，逐个比较业务页与场景页的页头宽度、标题左边缘/顶部位置、字号和行高；全部通过，无页面横向溢出或浏览器错误。人工截图检查覆盖 Dashboard、新建用户和用户表格。日志保存在 `artifacts/layout-alignment/`。
+
+## 2026-10-24 — Page standards 修复
+
+修复数值圆角在 MUI sx 中被 shape.borderRadius 再次放大的问题：页面改为带 px 的主题 token 引用，lint 仅允许来自主题的单个插值，仍拒绝数字字面量和任意对象引用。规范图将父子分类分行展示，并标注静态样例，避免误认为可操作的业务列表。说明区在窄桌面使用两列；标签顺序与用户要求保持一致。
+
+规范选择通过 URL 的 pattern 参数保留；Tab 与面板关联完整，规则与状态也纳入同一个面板。Viewer 不再获得用户管理入口，表单示例进入 Profile；详情示例通过 API 找到当前存在的项目，支持加载、错误重试和空目录回退。提供中文 Markdown 规范下载。文档移除不存在的共享组件引用，并修正列数与计数口径。
+
+- `npm run check` 通过：Lint、TypeScript strict、53 项单元测试、生产构建。
+- `npx playwright test e2e/page-standards.spec.ts --reporter=line`：7 项通过，覆盖 1280/1440/1920 的四个模板、圆角与溢出、键盘、刷新、Viewer 入口，以及 project-1 删除后的详情示例定位。
+- 截图：`artifacts/page-standards-fixed/`；人工检查表格、卡片、详情、表单示意。Impeccable 检测返回 `[]`；`git diff --check` 通过。
+
+范围：规范页的结构图为静态示意，交互入口打开现有业务页面；本次未给所有业务资源新增二级分类或标签数据模型。
+
+## 2026-10-24 — 四类规范拆页与表格示例重做
+
+根据浏览器标注，将四类规范拆为 `/page-standards/table-list`、`/detail`、`/card-list`、`/form`，Resources 各有独立入口；旧地址与 pattern 参数兼容跳转。应用侧栏的导航区域可独立滚动，短窗口下仍可到达全部入口，规范页的面包屑不再误显示 Details。
+
+标注中的小号静态表格替换为真实 MUI 控件与共享 DataTable：一级/二级分类联动、标签/状态筛选、搜索与清除、单列排序、25/50/100 分页、选择、批量与行删除确认、详情、新增校验和重置。示例数据和查询封装在 `src/domain/page-standard-example.ts`，每个预览实例隔离，所有操作不修改业务数据；双击创建只产生一条记录。其他三类规范保留静态结构示意和对应业务页入口。
+
+- `npm run check` 通过：55 项单元测试、Lint、TypeScript、生产构建。
+- `npx playwright test e2e/page-standards.spec.ts e2e/visual.spec.ts --reporter=line --workers=2`：11 项通过。
+- 浏览器回归覆盖四页导航与刷新、旧链接跳转、Viewer、分类与标签组合、空结果恢复、排序与分页复位、确认取消/删除、新增校验/防重及重置。
+- 短窗口截图：`artifacts/page-standards-separated/`，尺寸 1280/1461/1920 × 630；全部业务页面矩阵覆盖 1280/1440/1920。检查无页面横向溢出，表格在自己的内容区处理宽列。
+- Impeccable 检测返回 `[]`，`git diff --check` 通过。
+
+## 2026-10-24 — 纯页面示例
+
+移除四页外围规范页头、用途说明、结构清单、交互契约、状态清单、基础规则、下载区及静态缩略图，只展示实际页面。原聚合组件缩减为旧链接重定向；Resources 导航改为四个 Example 入口。开发规范保留在 docs/page-standards.md。
+
+表格直接展示 PageLayout、分类、筛选、操作栏与共享 DataTable。卡片列表改用正常尺寸 Card 与真实查询、分页和删除确认。详情用 PageSection、DetailRow、关联资源和编辑入口。表单用 RHF、Zod、FormField、FormSection、FormActions，支持保存、校验、提交锁及未保存离开保护。四页通过领域示例服务读取数据，避免页面读取 seed 或存储。
+
+`npm run check` 通过（55 项单元测试）；页面回归 9 项、全局视觉矩阵 4 项通过，共 13 项 Playwright。人工截图核对四页 1461px，自动覆盖 1280/1461/1920 × 630 和完整 1280/1440/1920 桌面矩阵。纯示例截图在 artifacts/page-examples-clean/。设计扫描返回 []，git diff --check 通过。
+
+## 2026-10-24 — 全局点击宽度抖动
+
+桌面 Chromium 有界面模式、1461×630 视口、16px 常驻滚动条下复现：基准 main 宽度 1213px；普通分类点击保持 1213px；打开 Select/Menu/Dialog 后变为 1197px，body 被 MUI 写入 padding-right:16px，同时 html 的 scrollbar-gutter:stable 仍占据滚动条空间，导致重复补偿。无界面 Chromium 隐藏视口滚动条，最初未复现；不能用仅 headless 的结果证明该场景稳定。
+
+统一改为 html overflow-y:scroll，移除 stable gutter，让 MUI 锁定根节点并只补偿一次滚动条宽度。保留滚动锁定、模态焦点和关闭恢复，未逐页禁用 ScrollLock 或硬编码负边距。修复后上述 Select/Dialog 的 main 宽度均保持 1213px，body padding 为 0。
+
+新增 e2e/width-stability.spec.ts，使用有界面 Chromium 与可测量的16px滚动条，逐帧采样 main 宽度，同时比较标题栏、侧栏、左边缘；覆盖普通分类、筛选下拉、账户菜单、创建弹窗、嵌套下拉、关闭恢复和短页面导航，并断言滚动锁定与焦点恢复。
+
+npm run check 通过（55 项单元测试）；宽度回归、四页交互与桌面视觉矩阵共15项Playwright通过。git diff --check 通过。

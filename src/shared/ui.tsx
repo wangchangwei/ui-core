@@ -82,7 +82,7 @@ export function StatusBadge({ status }: {
 }) {
     const value = statusConfig[status.toLowerCase()] ?? { label: status, color: 'default' as const };
     const Icon = value.icon;
-    return <Chip component="span" label={value.label} color={value.color} variant="outlined" icon={Icon ? <Icon /> : undefined} sx={{ '& .MuiChip-icon': { fontSize: 14 }, borderColor: 'divider', bgcolor: 'background.paper', flexShrink: 0 }}/>;
+    return <Chip component="span" label={value.label} color={value.color} variant="outlined" icon={Icon ? <Icon /> : undefined} sx={{ '& .MuiChip-icon': { fontSize: 14 }, borderColor: 'divider', bgcolor: value.color === 'default' ? 'action.hover' : `${value.color}.light`, color: value.color === 'default' ? 'text.secondary' : `${value.color}.dark`, flexShrink: 0 }}/>;
 }
 export function ConfirmDialog({ open, title, description, onConfirm, onClose, pending = false, confirmLabel, destructive = false }: {
     open: boolean;
@@ -101,12 +101,13 @@ export function ConfirmDialog({ open, title, description, onConfirm, onClose, pe
     <DialogActions><Button ref={cancelRef} autoFocus onClick={onClose} disabled={pending} variant="outlined">Cancel</Button><Button variant="contained" color={destructive ? 'error' : 'primary'} disabled={pending} onClick={onConfirm}>{pending && <CircularProgress size={14} color="inherit" sx={{ mr: 2 }}/>}{confirmLabel ?? (destructive ? 'Delete' : 'Confirm')}</Button></DialogActions>
   </Dialog>;
 }
-export function AsyncState({ loading, error, empty, emptyTitle = 'Nothing here yet', emptyDescription = 'New items will appear here.', onRetry, children }: {
+export function AsyncState({ loading, error, empty, emptyTitle = 'Nothing here yet', emptyDescription = 'New items will appear here.', emptyAction, onRetry, children }: {
     loading?: boolean;
     error?: string | null;
     empty?: boolean;
     emptyTitle?: string;
     emptyDescription?: string;
+    emptyAction?: ReactNode;
     onRetry?: () => void;
     children?: ReactNode;
 }) {
@@ -129,7 +130,7 @@ export function AsyncState({ loading, error, empty, emptyTitle = 'Nothing here y
                 py: 16, textAlign: 'center'
             }}><SearchOff sx={{ color: 'text.disabled', fontSize: 28, mb: 1 }}/><Typography variant="h6">{emptyTitle}</Typography><Typography sx={{
                 color: "text.secondary"
-            }}>{emptyDescription}</Typography></Stack>;
+            }}>{emptyDescription}</Typography>{emptyAction}</Stack>;
     return <>{children}</>;
 }
 export function FormField<T extends FieldValues>({ name, control, helperText, ...props }: {

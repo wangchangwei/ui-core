@@ -22,6 +22,12 @@ describe('feature lint rules', () => {
     `)).toEqual([]);
   });
 
+  it('allows explicit pixel units from tokens without allowing literal or arbitrary interpolations', () => {
+    expect(lint('<Box sx={{ borderRadius: `${tokens.radius.panel}px` }} />')).toEqual([]);
+    expect(lint('<Box sx={{ borderRadius: `${12}px` }} />')).toHaveLength(1);
+    expect(lint('<Box sx={{ borderRadius: `${untrusted.radius}px` }} />')).toHaveLength(1);
+  });
+
   it('allows computed theme colors while still checking nested literal colors', () => {
     expect(lint(`<Box sx={{ color: theme.palette.primary.main, '&:hover': { color: '#fff' } }} />`).map((message) => message.message)).toEqual([
       'Use a theme color token instead of a raw color literal.',

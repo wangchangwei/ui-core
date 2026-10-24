@@ -45,6 +45,10 @@ function isAllowedReference(node) {
   if (node.type === 'Literal') {
     return node.value === 0 || node.value === '0' || node.value === 'auto' || node.value === 'inherit' || node.value === 'currentColor';
   }
+  if (node.type === 'TemplateLiteral' && node.expressions.length === 1
+      && node.quasis[0]?.value.raw === '' && node.quasis[1]?.value.raw === 'px') {
+    return isAllowedReference(node.expressions[0]);
+  }
   if (node.type === 'TemplateLiteral' && node.expressions.length === 0) {
     const value = node.quasis[0]?.value.raw ?? '';
     return value === '0' || value === 'auto' || value === 'inherit' || value === 'currentColor';

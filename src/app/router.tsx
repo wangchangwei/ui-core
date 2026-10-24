@@ -56,6 +56,11 @@ export const router = createBrowserRouter([{ element: <Root />, errorElement: <R
                     page('/settings', () => import('../features/SettingsPage').then(m => m.SettingsPage), 'settings:write'),
                     page('/profile', () => import('../features/ProfilePage').then(m => m.ProfilePage), 'profile:write'),
                     page('/design-system', () => import('../features/DesignSystemPage').then(m => m.DesignSystemPage), 'design:read'),
+                    page('/page-standards', () => import('../features/PageStandardsPage').then(m => m.PageStandardsPage), 'design:read'),
+                    page('/page-standards/table-list', () => import('../features/TableListStandardPage').then(m => m.TableListStandardPage), 'design:read'),
+                    page('/page-standards/detail', () => import('../features/DetailStandardPage').then(m => m.DetailStandardPage), 'design:read'),
+                    page('/page-standards/card-list', () => import('../features/CardListStandardPage').then(m => m.CardListStandardPage), 'design:read'),
+                    page('/page-standards/form', () => import('../features/FormStandardPage').then(m => m.FormStandardPage), 'design:read'),
                     { path: '/403', element: <ErrorPage forbidden/> }, { path: '*', element: <ErrorPage /> },
                 ] },
         ] }]);

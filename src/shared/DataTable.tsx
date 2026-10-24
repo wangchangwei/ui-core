@@ -12,6 +12,7 @@ export function DataTable<R extends GridValidRowModel>(props: DataGridProps<R>) 
                 bgcolor: 'background.paper', borderColor: 'divider', borderRadius: `${tokens.radius.panel}px`,
                 '--DataGrid-overlayHeight': '220px', '--DataGrid-containerBackground': vercelTokens.colors.canvas,
                 '& .MuiDataGrid-columnHeaderTitle': { ...vercelTokens.typography['label-sm'], color: 'text.secondary' },
+                '& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell': { px: 4 },
                 '& .MuiDataGrid-columnSeparator': { color: 'divider' },
                 '& .MuiDataGrid-cell': { ...vercelTokens.typography['body-md'], display: 'flex', alignItems: 'center', borderColor: 'divider', fontVariantNumeric: 'tabular-nums' },
                 '& .MuiDataGrid-row:hover': { bgcolor: 'action.hover' },
