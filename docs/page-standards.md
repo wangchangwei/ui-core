@@ -2,6 +2,8 @@
 
 本文是四类后台页面模板的实现契约。界面仅展示正常尺寸、可操作的页面示例；用途、结构规则和验收说明保留在本文，不渲染进示例页面。视觉 token 仍以 `docs/reference/DESIGN-vercel.md` 为源，共享行为以 `src/shared/ui.tsx`、`src/shared/DataTable.tsx` 和主题为准。
 
+单个组件的参数和状态责任见 [组件契约](component-standards.md)；其他项目采用整套规范的流程见 [项目接入指南](adoption-guide.md)。`/design-system` 提供上述文档下载及各模板入口。
+
 | 示例 | 路径 | 主要参考文件 |
 | --- | --- | --- |
 | 表格列表 | `/page-standards/table-list` | `TableStandardExample.tsx` |

@@ -95,7 +95,7 @@ test('shared state examples retry and dialogs restore keyboard focus', async ({ 
   await expect(page.getByRole('alert')).toContainText("We couldn't load projects");
   await page.screenshot({ path: 'artifacts/screenshots/1440-state-error.png', fullPage: true });
   await page.getByRole('button', { name: 'Retry', exact: true }).click();
-  await expect(page.getByRole('tabpanel', { name: 'Content example' })).toContainText('Projects loaded successfully');
+  await expect(page.getByRole('tabpanel', { name: 'Content', exact: true })).toContainText('Projects loaded successfully');
   const opener = page.getByRole('button', { name: 'Open confirmation', exact: true });
   await opener.hover();
   await page.screenshot({ path: 'artifacts/screenshots/1440-controls-hover.png' });

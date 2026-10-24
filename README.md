@@ -1,6 +1,18 @@
 # Forma UI Core
 
-Forma 是一个 React + MUI 的桌面企业后台脚手架。它把主题变量、应用布局、数据服务、权限和常见页面模式放在同一套可复制的约定中，供后续页面开发和 AI 协作使用。
+Forma UI Core 是供其他项目遵循的 UI 核心规范源工程，使用 React + MUI 提供可操作的参考实现。它集中定义视觉 token、组件行为、页面模板和工程约束，帮助开发者与 AI 在下游项目中保持一致。用户、项目与场景管理用于验证规范的实际行为。
+
+## 规范与项目接入
+
+| 要解决的问题 | 入口 |
+| --- | --- |
+| 视觉值以什么为准 | [设计源稿](docs/reference/DESIGN-vercel.md) → [后台映射](DESIGN.md) |
+| 组件怎么用、谁负责状态 | [组件契约](docs/component-standards.md) |
+| 页面如何组合 | [四类页面规范](docs/page-standards.md)与 Resources 中的可操作示例 |
+| 其他项目如何遵循 | [项目接入指南](docs/adoption-guide.md) |
+| 新增功能怎样落地 | [开发配方](docs/development.md) |
+
+`/design-system` 提供组件样本、契约索引、模板入口及规范文档下载。当前以源码和文档复用，尚未发布独立 UI Core npm 包；接入时需一起保留主题、字体、共享组件及 lint 约束，并记录采用的源 commit。
 
 ## 快速开始
 

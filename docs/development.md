@@ -4,6 +4,8 @@
 
 本文给出最短的新增页面路径。先看 `DESIGN.md` 与 [页面规范](page-standards.md)，再决定页面家族；不要为单个页面创建新的全局抽象。登录后的 `Resources` 四个独立示例入口与 Markdown 文档保持同步。
 
+组件参数与状态责任见 [组件契约](component-standards.md)。在其他项目中采用本规范时，先执行 [项目接入指南](adoption-guide.md)，把主题、字体、shared 与检查规则作为共同基线迁入，再开发业务页面。
+
 ## 新增列表页
 
 在 `src/features` 创建页面，使用 `PageLayout`、`FilterBar` 和共享 `DataTable`。筛选值放在页面状态中，筛选或排序变化时把页码设回 0；调用 `api.listUsers` 或 `api.listProjects` 处理分页、总数、加载、错误和重试。列定义只描述展示和行操作，DataGrid 类型从 `@mui/x-data-grid` 引入，运行时组件通过 `DataTable` 使用。写操作用 `can(session?.role, 'users:write')` 等现有权限检查包住。
@@ -22,7 +24,7 @@
 
 ## 注册导航与权限
 
-在路由定义处注册页面，在导航配置中增加同一权限键，确保菜单隐藏和直接访问拦截使用同一份 permission definition。Viewer 只能看到 Dashboard、Projects、Profile 和 Design System；管理页面直接访问时渲染 403。
+在路由定义处注册页面，在导航配置中增加同一权限键，确保菜单隐藏和直接访问拦截使用同一份 permission definition。Viewer 可读 Dashboard、Projects、Scenarios、Design System 与四类规范示例，并可以编辑自己的 Profile；管理页面直接访问时渲染 403。权限以 `src/domain/permissions.ts` 为准。
 
 ## 替换模拟服务
 

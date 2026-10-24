@@ -118,6 +118,8 @@ Geist Variable 用于界面，Geist Mono 用于代码和大写 eyebrow（原稿�
 
 ## Components
 
+组件参数、调用方状态责任、表格与卡片组合及验收规则见 [组件契约](docs/component-standards.md)；其他项目的接入顺序和升级记录见 [项目接入指南](docs/adoption-guide.md)。Design system 页提供样本、组件索引、四类模板入口与对应 Markdown 下载。
+
 - AppShell：导航、面包屑、顶栏和账户菜单；导航状态使用 full 圆角和主题语义色。
 - PageLayout / PageSection：统一标题、说明、操作区和内容区；标题层级消费 heading-lg 或 heading-md。
 - FilterBar / DataTable：统一筛选、结果、分页和表格滚动；业务页面不直接引入 DataGrid。
@@ -126,7 +128,7 @@ Geist Variable 用于界面，Geist Mono 用于代码和大写 eyebrow（原稿�
 - FormField：RHF 与 MUI 字段适配；输入使用白色表面、hairline 边框、6px 圆角和 8px/12px 内边距，hover 使用 ink，focus 使用 link。标签固定在控件上方，标签和控件间隔 8px；不使用浮动缩小标签，不能用 placeholder 替代标签。
 - StatusBadge：共享语义色、文字和图标；成功映射蓝色 link，不创建绿色替代 token。
 - 分类筛选消费 `category` 变体，选中态由主题通过 `aria-pressed` 提供；一级和二级分类共用形态，不在页面重复定义选中颜色。
-- DataGrid 表头和单元格水平内边距为 16px，分页选择控件为 40px；普通文字按钮（含 small）使用 14/20、最小高度 40px，32px 密度仅保留给小型图标按钮及已明确记录的局部例外。
+- DataGrid 普通表头和单元格水平内边距为 16px；50px 全选列表头使用 0 水平内距，避免裁剪 checkbox；分页选择控件为 40px。普通文字按钮（含 small）使用 14/20、最小高度 40px，32px 密度仅保留给小型图标按钮及已明确记录的局部例外。
 - 校验错误与聚焦同时出现时，标签和边框保持 error-deep；状态徽章使用语义 deep 文字与对应 soft 背景，错误没有单独 soft token 时复用中性 soft。
 - ConfirmDialog / useUnsavedChanges：删除确认、未保存离开保护、焦点恢复和键盘操作。
 - AsyncState：加载、空数据、搜索无结果、失败和重试状态。
